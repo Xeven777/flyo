@@ -1,10 +1,21 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import type { Snippet } from "@prisma/client"
-import { deleteSnippet, disableSnippet, enableSnippet } from "@/app/actions/snippets"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import type { Snippet } from "@prisma/client";
+import {
+  deleteSnippet,
+  disableSnippet,
+  enableSnippet,
+} from "@/actions/snippets";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -12,65 +23,76 @@ import {
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
-import { Button } from "@/components/ui/button"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { Eye, Edit2, Copy, Trash2, MoreVertical } from "lucide-react"
-import Link from "next/link"
-import { toast } from "sonner"
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Eye, Edit2, Copy, Trash2, MoreVertical } from "lucide-react";
+import Link from "next/link";
+import { toast } from "sonner";
 
 interface DashboardClientProps {
-  snippets: Snippet[]
+  snippets: Snippet[];
 }
 
 export function DashboardClient({ snippets }: DashboardClientProps) {
-  const router = useRouter()
-  const [isDeleting, setIsDeleting] = useState<string | null>(null)
-  const [toDelete, setToDelete] = useState<Snippet | null>(null)
+  const router = useRouter();
+  const [isDeleting, setIsDeleting] = useState<string | null>(null);
+  const [toDelete, setToDelete] = useState<Snippet | null>(null);
 
   const handleDelete = async () => {
-    if (!toDelete) return
+    if (!toDelete) return;
 
-    setIsDeleting(toDelete.id)
-    const result = await deleteSnippet(toDelete.id)
-    setIsDeleting(null)
+    setIsDeleting(toDelete.id);
+    const result = await deleteSnippet(toDelete.id);
+    setIsDeleting(null);
 
     if (result.success) {
-      toast.success("Snippet deleted")
-      router.refresh()
+      toast.success("Snippet deleted");
+      router.refresh();
     } else {
-      toast.error(result.error || "Failed to delete snippet")
+      toast.error(result.error || "Failed to delete snippet");
     }
 
-    setToDelete(null)
-  }
+    setToDelete(null);
+  };
 
   const handleToggleDisable = async (snippet: Snippet) => {
-    const result = snippet.isDisabled ? await enableSnippet(snippet.id) : await disableSnippet(snippet.id)
+    const result = snippet.isDisabled
+      ? await enableSnippet(snippet.id)
+      : await disableSnippet(snippet.id);
 
     if (result.success) {
-      toast.success(snippet.isDisabled ? "Snippet enabled" : "Snippet disabled")
-      router.refresh()
+      toast.success(
+        snippet.isDisabled ? "Snippet enabled" : "Snippet disabled"
+      );
+      router.refresh();
     } else {
-      toast.error(result.error || "Failed to update snippet")
+      toast.error(result.error || "Failed to update snippet");
     }
-  }
+  };
 
   const handleCopyLink = (id: string) => {
-    const link = `${window.location.origin}/preview/${id}`
-    navigator.clipboard.writeText(link)
-    toast.success("Link copied to clipboard")
-  }
+    const link = `${window.location.origin}/preview/${id}`;
+    navigator.clipboard.writeText(link);
+    toast.success("Link copied to clipboard");
+  };
 
   if (snippets.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-muted-foreground mb-4">No snippets yet. Create one to get started!</p>
+        <p className="text-muted-foreground mb-4">
+          No snippets yet. Create one to get started!
+        </p>
         <Link href="/">
           <Button>Create Snippet</Button>
         </Link>
       </div>
-    )
+    );
   }
 
   return (
@@ -104,7 +126,11 @@ export function DashboardClient({ snippets }: DashboardClientProps) {
                   </span>
                 </TableCell>
                 <TableCell>{snippet.createdAt.toLocaleDateString()}</TableCell>
-                <TableCell>{snippet.expiresAt ? snippet.expiresAt.toLocaleDateString() : "Never"}</TableCell>
+                <TableCell>
+                  {snippet.expiresAt
+                    ? snippet.expiresAt.toLocaleDateString()
+                    : "Never"}
+                </TableCell>
                 <TableCell className="text-right">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -114,13 +140,19 @@ export function DashboardClient({ snippets }: DashboardClientProps) {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem asChild>
-                        <Link href={`/preview/${snippet.id}`} className="flex items-center gap-2 cursor-pointer">
+                        <Link
+                          href={`/preview/${snippet.id}`}
+                          className="flex items-center gap-2 cursor-pointer"
+                        >
                           <Eye className="h-4 w-4" />
                           View
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link href={`/edit/${snippet.id}`} className="flex items-center gap-2 cursor-pointer">
+                        <Link
+                          href={`/edit/${snippet.id}`}
+                          className="flex items-center gap-2 cursor-pointer"
+                        >
                           <Edit2 className="h-4 w-4" />
                           Edit
                         </Link>
@@ -155,11 +187,15 @@ export function DashboardClient({ snippets }: DashboardClientProps) {
       </div>
 
       {/* Delete Confirmation Dialog */}
-      <AlertDialog open={!!toDelete} onOpenChange={(open) => !open && setToDelete(null)}>
+      <AlertDialog
+        open={!!toDelete}
+        onOpenChange={(open) => !open && setToDelete(null)}
+      >
         <AlertDialogContent>
           <AlertDialogTitle>Delete Snippet?</AlertDialogTitle>
           <AlertDialogDescription>
-            Are you sure you want to delete "{toDelete?.title}"? This action cannot be undone.
+            Are you sure you want to delete "{toDelete?.title}"? This action
+            cannot be undone.
           </AlertDialogDescription>
           <div className="flex gap-3 justify-end">
             <AlertDialogCancel>Cancel</AlertDialogCancel>
@@ -174,5 +210,5 @@ export function DashboardClient({ snippets }: DashboardClientProps) {
         </AlertDialogContent>
       </AlertDialog>
     </>
-  )
+  );
 }

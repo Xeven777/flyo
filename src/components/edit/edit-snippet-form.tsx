@@ -1,38 +1,38 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import type { Snippet } from "@prisma/client"
-import { updateSnippet } from "@/app/actions/snippets"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { toast } from "sonner"
-import Link from "next/link"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import type { Snippet } from "@prisma/client";
+import { updateSnippet } from "@/actions/snippets";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
+import Link from "next/link";
 
 interface EditSnippetFormProps {
-  snippet: Snippet
+  snippet: Snippet;
 }
 
 export function EditSnippetForm({ snippet }: EditSnippetFormProps) {
-  const router = useRouter()
-  const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     title: snippet.title,
     html: snippet.html,
     css: snippet.css || "",
     js: snippet.js || "",
-  })
+  });
 
   const handleChange = (field: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }))
-  }
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
+    e.preventDefault();
+    setIsLoading(true);
 
     const result = await updateSnippet({
       id: snippet.id,
@@ -40,17 +40,17 @@ export function EditSnippetForm({ snippet }: EditSnippetFormProps) {
       html: formData.html,
       css: formData.css || undefined,
       js: formData.js || undefined,
-    })
+    });
 
-    setIsLoading(false)
+    setIsLoading(false);
 
     if (result.success) {
-      toast.success("Snippet updated successfully")
-      router.push(`/preview/${snippet.id}`)
+      toast.success("Snippet updated successfully");
+      router.push(`/preview/${snippet.id}`);
     } else {
-      toast.error(result.error || "Failed to update snippet")
+      toast.error(result.error || "Failed to update snippet");
     }
-  }
+  };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -115,5 +115,5 @@ export function EditSnippetForm({ snippet }: EditSnippetFormProps) {
         </Link>
       </div>
     </form>
-  )
+  );
 }

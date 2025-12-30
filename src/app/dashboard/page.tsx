@@ -1,13 +1,13 @@
-import { getAllSnippets } from "@/app/actions/snippets"
-import { DashboardClient } from "@/components/dashboard/dashboard-client"
+import { getAllSnippets } from "@/actions/snippets";
+import { DashboardClient } from "@/components/dashboard/dashboard-client";
 
 export const metadata = {
   title: "Dashboard - HTML Preview",
   description: "Manage your HTML snippets",
-}
+};
 
 export default async function DashboardPage() {
-  const result = await getAllSnippets()
+  const result = await getAllSnippets();
 
   if (!result.success) {
     return (
@@ -16,7 +16,7 @@ export default async function DashboardPage() {
           <p className="text-destructive">Failed to load snippets</p>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -25,7 +25,9 @@ export default async function DashboardPage() {
       <div className="border-b border-border bg-card">
         <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
           <h1 className="text-2xl font-bold text-foreground">Dashboard</h1>
-          <p className="text-sm text-muted-foreground mt-1">Manage your HTML snippets</p>
+          <p className="text-sm text-muted-foreground mt-1">
+            Manage your HTML snippets
+          </p>
         </div>
       </div>
 
@@ -34,5 +36,5 @@ export default async function DashboardPage() {
         <DashboardClient snippets={result.snippets || []} />
       </div>
     </div>
-  )
+  );
 }
