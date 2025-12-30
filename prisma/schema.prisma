@@ -1,0 +1,29 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mongodb"
+}
+
+model Snippet {
+  id    String  @id @default(cuid()) @map("_id")
+  title String
+  html  String
+  css   String?
+  js    String?
+
+  // Ownership & Control
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  expiresAt  DateTime?
+  isDisabled Boolean   @default(false)
+
+  // Analytics
+  views        Int       @default(0)
+  lastViewedAt DateTime?
+
+  @@index([createdAt])
+  @@index([expiresAt])
+}
