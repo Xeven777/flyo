@@ -35,34 +35,41 @@ export default async function PreviewPage({
 
   const snippet = result.snippet!;
 
-  return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <div className="border-b border-border bg-card">
-        <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
-          <h1 className="text-2xl font-bold text-foreground">
-            {snippet.title}
-          </h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Views: {snippet.views} • Last updated:{" "}
-            {snippet.updatedAt.toLocaleDateString()}
-          </p>
-          {snippet.expiresAt && (
-            <p className="text-sm text-destructive mt-1">
-              Expires: {snippet.expiresAt.toLocaleDateString()}
-            </p>
-          )}
-        </div>
-      </div>
+  const srcdoc = (() => {
+    if (!snippet.css && !snippet.js) {
+      return snippet.html;
+    }
+    return `
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>${snippet.title}</title>
+        <style>
+          * { margin: 0; padding: 0; box-sizing: border-box; }
+          body { font-family: system-ui, -apple-system, sans-serif; background: #fff; }
+          ${snippet.css || ""}
+        </style>
+      </head>
+      <body>
+        ${snippet.html}
+        <script>
+          ${snippet.js || ""}
+        <\/script>
+      </body>
+      </html>
+    `;
+  })();
 
-      {/* Content */}
-      <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-        <HtmlPreviewClient
-          html={snippet.html}
-          css={snippet.css || ""}
-          js={snippet.js || ""}
-        />
-      </div>
+  return (
+    <div className="fixed inset-0 w-full h-full">
+      <iframe
+        srcDoc={srcdoc}
+        className="w-full h-full border-0"
+        title={snippet.title}
+        sandbox="allow-scripts"
+      />
     </div>
   );
 }

@@ -10,7 +10,6 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import Link from "next/link";
 import { Snippet } from "../../../generated/prisma";
 import { HtmlPreviewClient } from "@/components/preview/html-preview-client";
 
@@ -79,7 +78,6 @@ export function EditSnippetForm({ snippet }: EditSnippetFormProps) {
             onChange={(e) => handleChange("html", e.target.value)}
             placeholder="<h1>Hello World</h1>"
             required
-            className="h-40"
           />
         </div>
 
@@ -91,7 +89,6 @@ export function EditSnippetForm({ snippet }: EditSnippetFormProps) {
             value={formData.css}
             onChange={(e) => handleChange("css", e.target.value)}
             placeholder="h1 { color: blue; }"
-            className="h-40"
           />
         </div>
 
@@ -103,34 +100,23 @@ export function EditSnippetForm({ snippet }: EditSnippetFormProps) {
             value={formData.js}
             onChange={(e) => handleChange("js", e.target.value)}
             placeholder="console.log('Hello');"
-            className="h-40"
           />
         </div>
 
         {/* Buttons */}
-        <div className="flex gap-3 pt-4">
-          <Button type="submit" disabled={isLoading}>
+        <div className="pt-4">
+          <Button type="submit" disabled={isLoading} className="w-full">
             {isLoading ? "Saving..." : "Save Changes"}
           </Button>
-          <Link href={`/preview/${snippet.slug}`}>
-            <Button type="button" variant="outline">
-              Cancel
-            </Button>
-          </Link>
         </div>
       </form>
 
-      {/* Right side: Live Preview */}
-      <div className="space-y-2">
-        <Label>Live Preview</Label>
-        <div className="border border-border rounded-lg overflow-hidden bg-card sticky top-4">
-          <HtmlPreviewClient
-            html={formData.html}
-            css={formData.css}
-            js={formData.js}
-          />
-        </div>
-      </div>
+      <HtmlPreviewClient
+        html={formData.html}
+        css={formData.css}
+        js={formData.js}
+        className="h-full min-h-160"
+      />
     </div>
   );
 }

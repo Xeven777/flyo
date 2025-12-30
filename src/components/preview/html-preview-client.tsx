@@ -44,19 +44,15 @@ export function HtmlPreviewClient({
   }, [html, css, js]);
 
   return (
-    <div className={`flex flex-col gap-4 ${className}`}>
-      <div className="bg-card border border-border rounded-lg overflow-hidden">
-        <iframe
-          srcDoc={srcdoc}
-          className="w-full bg-white h-[600px] lg:h-[calc(100vh-200px)]"
-          title="HTML Preview"
-          sandbox="allow-scripts"
-        />
-      </div>
-      <p className="text-xs text-muted-foreground">
-        This preview is sandboxed for security. Only JavaScript execution is
-        allowed.
-      </p>
+    <div
+      className={`bg-card border border-border rounded-lg overflow-hidden ${className}`}
+    >
+      <iframe
+        srcDoc={srcdoc}
+        className="w-full bg-white h-full min-h-[500px]"
+        title="HTML Preview"
+        sandbox="allow-scripts"
+      />
     </div>
   );
 }

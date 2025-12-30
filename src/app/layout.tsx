@@ -1,10 +1,10 @@
 import type React from "react";
 import type { Metadata } from "next";
-import { Geist } from "next/font/google";
+import { Familjen_Grotesk } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
 
-const geist = Geist({ subsets: ["latin"] });
+const font = Familjen_Grotesk({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Flyo",
@@ -18,9 +18,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <body className={`${geist.className} antialiased`}>
+      <body className={`${font.className} antialiased`}>
         {children}
-        <Toaster />
+        <Toaster richColors theme="dark" />
       </body>
     </html>
   );

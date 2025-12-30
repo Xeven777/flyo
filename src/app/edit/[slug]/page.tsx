@@ -2,6 +2,9 @@ import { getSnippet } from "@/actions/snippets";
 import { notFound } from "next/navigation";
 import { EditSnippetForm } from "@/components/edit/edit-snippet-form";
 import { Metadata } from "next";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft, Eye } from "lucide-react";
 
 export async function generateMetadata({
   params,
@@ -39,9 +42,25 @@ export default async function EditPage({
       {/* Header */}
       <div className="border-b border-border bg-card">
         <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
-          <h1 className="text-2xl font-bold text-foreground">
-            Edit: {snippet.title}
-          </h1>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Link href="/dashboard">
+                <Button variant="ghost" size="sm">
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  Back
+                </Button>
+              </Link>
+              <h1 className="text-2xl font-bold text-foreground">
+                Edit: {snippet.title}
+              </h1>
+            </div>
+            <Link href={`/preview/${snippet.slug}`}>
+              <Button variant="outline" size="sm">
+                <Eye className="h-4 w-4 mr-2" />
+                Preview
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
 

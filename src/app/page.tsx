@@ -21,17 +21,17 @@ export default function HomePage() {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
-        <div className="max-w-2xl">
+        <div className="mb-8">
           <h2 className="text-3xl font-bold text-foreground mb-4">
             Create a New Snippet
           </h2>
-          <p className="text-muted-foreground mb-8">
+          <p className="text-muted-foreground">
             Create shareable HTML snippets with CSS and JavaScript. Get instant
             live previews and manage all your snippets in one place.
           </p>
-
-          <CreateSnippetForm />
         </div>
+
+        <CreateSnippetForm />
       </div>
     </div>
   );
