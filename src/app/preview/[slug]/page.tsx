@@ -1,32 +1,33 @@
 import { getSnippet } from "@/actions/snippets";
 import { notFound } from "next/navigation";
 import { HtmlPreviewClient } from "@/components/preview/html-preview-client";
+import { Metadata } from "next";
 
-// export async function generateMetadata({
-//   params,
-// }: {
-//   params: Promise<{ id: string }>;
-// }) {
-//   const { id } = await params;
-//   const result = await getSnippet(id);
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const result = await getSnippet(slug);
 
-//   if (!result.success) {
-//     return { title: "Snippet Not Found" };
-//   }
+  if (!result.success) {
+    return { title: "Snippet Not Found" };
+  }
 
-//   return {
-//     title: result.snippet!.title + " - HTML Preview",
-//     description: `Preview of ${result.snippet!.title}`,
-//   };
-// }
+  return {
+    title: result.snippet!.title + " - HTML Preview",
+    description: `Preview of ${result.snippet!.title}`,
+  };
+}
 
 export default async function PreviewPage({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: Promise<{ slug: string }>;
 }) {
-  const { id } = await params;
-  const result = await getSnippet(id);
+  const { slug } = await params;
+  const result = await getSnippet(slug);
 
   if (!result.success) {
     notFound();

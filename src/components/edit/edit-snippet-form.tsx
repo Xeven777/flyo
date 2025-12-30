@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import Link from "next/link";
 import { Snippet } from "../../../generated/prisma";
+import { HtmlPreviewClient } from "@/components/preview/html-preview-client";
 
 interface EditSnippetFormProps {
   snippet: Snippet;
@@ -36,7 +37,7 @@ export function EditSnippetForm({ snippet }: EditSnippetFormProps) {
     setIsLoading(true);
 
     const result = await updateSnippet({
-      id: snippet.id,
+      slug: snippet.slug,
       title: formData.title,
       html: formData.html,
       css: formData.css || undefined,
@@ -47,71 +48,89 @@ export function EditSnippetForm({ snippet }: EditSnippetFormProps) {
 
     if (result.success) {
       toast.success("Snippet updated successfully");
-      router.push(`/preview/${snippet.id}`);
+      router.push(`/preview/${snippet.slug}`);
     } else {
       toast.error(result.error || "Failed to update snippet");
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      {/* Title */}
-      <div className="space-y-2">
-        <Label htmlFor="title">Title</Label>
-        <Input
-          id="title"
-          value={formData.title}
-          onChange={(e) => handleChange("title", e.target.value)}
-          placeholder="Snippet title"
-          required
-        />
-      </div>
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* Left side: Form */}
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Title */}
+        <div className="space-y-2">
+          <Label htmlFor="title">Title</Label>
+          <Input
+            id="title"
+            value={formData.title}
+            onChange={(e) => handleChange("title", e.target.value)}
+            placeholder="Snippet title"
+            required
+          />
+        </div>
 
-      {/* HTML Editor */}
-      <div className="space-y-2">
-        <Label htmlFor="html">HTML</Label>
-        <Textarea
-          id="html"
-          value={formData.html}
-          onChange={(e) => handleChange("html", e.target.value)}
-          placeholder="<h1>Hello World</h1>"
-          required
-        />
-      </div>
+        {/* HTML Editor */}
+        <div className="space-y-2">
+          <Label htmlFor="html">HTML</Label>
+          <Textarea
+            id="html"
+            value={formData.html}
+            onChange={(e) => handleChange("html", e.target.value)}
+            placeholder="<h1>Hello World</h1>"
+            required
+            className="h-40"
+          />
+        </div>
 
-      {/* CSS Editor */}
-      <div className="space-y-2">
-        <Label htmlFor="css">CSS (Optional)</Label>
-        <Textarea
-          id="css"
-          value={formData.css}
-          onChange={(e) => handleChange("css", e.target.value)}
-          placeholder="h1 { color: blue; }"
-        />
-      </div>
+        {/* CSS Editor */}
+        <div className="space-y-2">
+          <Label htmlFor="css">CSS (Optional)</Label>
+          <Textarea
+            id="css"
+            value={formData.css}
+            onChange={(e) => handleChange("css", e.target.value)}
+            placeholder="h1 { color: blue; }"
+            className="h-40"
+          />
+        </div>
 
-      {/* JS Editor */}
-      <div className="space-y-2">
-        <Label htmlFor="js">JavaScript (Optional)</Label>
-        <Textarea
-          id="js"
-          value={formData.js}
-          onChange={(e) => handleChange("js", e.target.value)}
-          placeholder="console.log('Hello');"
-        />
-      </div>
+        {/* JS Editor */}
+        <div className="space-y-2">
+          <Label htmlFor="js">JavaScript (Optional)</Label>
+          <Textarea
+            id="js"
+            value={formData.js}
+            onChange={(e) => handleChange("js", e.target.value)}
+            placeholder="console.log('Hello');"
+            className="h-40"
+          />
+        </div>
 
-      {/* Buttons */}
-      <div className="flex gap-3 pt-4">
-        <Button type="submit" disabled={isLoading}>
-          {isLoading ? "Saving..." : "Save Changes"}
-        </Button>
-        <Link href={`/preview/${snippet.id}`}>
-          <Button type="button" variant="outline">
-            Cancel
+        {/* Buttons */}
+        <div className="flex gap-3 pt-4">
+          <Button type="submit" disabled={isLoading}>
+            {isLoading ? "Saving..." : "Save Changes"}
           </Button>
-        </Link>
+          <Link href={`/preview/${snippet.slug}`}>
+            <Button type="button" variant="outline">
+              Cancel
+            </Button>
+          </Link>
+        </div>
+      </form>
+
+      {/* Right side: Live Preview */}
+      <div className="space-y-2">
+        <Label>Live Preview</Label>
+        <div className="border border-border rounded-lg overflow-hidden bg-card sticky top-4">
+          <HtmlPreviewClient
+            html={formData.html}
+            css={formData.css}
+            js={formData.js}
+          />
+        </div>
       </div>
-    </form>
+    </div>
   );
 }

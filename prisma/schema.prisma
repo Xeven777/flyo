@@ -10,6 +10,7 @@ datasource db {
 
 model Snippet {
   id    String  @id @default(cuid()) @map("_id")
+  slug  String  @unique
   title String
   html  String
   css   String?

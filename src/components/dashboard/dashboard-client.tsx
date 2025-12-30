@@ -47,8 +47,8 @@ export function DashboardClient({ snippets }: DashboardClientProps) {
   const handleDelete = async () => {
     if (!toDelete) return;
 
-    setIsDeleting(toDelete.id);
-    const result = await deleteSnippet(toDelete.id);
+    setIsDeleting(toDelete.slug);
+    const result = await deleteSnippet(toDelete.slug);
     setIsDeleting(null);
 
     if (result.success) {
@@ -63,12 +63,12 @@ export function DashboardClient({ snippets }: DashboardClientProps) {
 
   const handleToggleDisable = async (snippet: Snippet) => {
     const result = snippet.isDisabled
-      ? await enableSnippet(snippet.id)
-      : await disableSnippet(snippet.id);
+      ? await enableSnippet(snippet.slug)
+      : await disableSnippet(snippet.slug);
 
     if (result.success) {
       toast.success(
-        snippet.isDisabled ? "Snippet enabled" : "Snippet disabled"
+        snippet.isDisabled ? "Snippet enabled" : "Snippet disabled",
       );
       router.refresh();
     } else {
@@ -76,8 +76,8 @@ export function DashboardClient({ snippets }: DashboardClientProps) {
     }
   };
 
-  const handleCopyLink = (id: string) => {
-    const link = `${window.location.origin}/preview/${id}`;
+  const handleCopyLink = (slug: string) => {
+    const link = `${window.location.origin}/preview/${slug}`;
     navigator.clipboard.writeText(link);
     toast.success("Link copied to clipboard");
   };
@@ -111,7 +111,7 @@ export function DashboardClient({ snippets }: DashboardClientProps) {
           </TableHeader>
           <TableBody>
             {snippets.map((snippet) => (
-              <TableRow key={snippet.id}>
+              <TableRow key={snippet.slug}>
                 <TableCell className="font-medium">{snippet.title}</TableCell>
                 <TableCell>{snippet.views}</TableCell>
                 <TableCell>
@@ -141,7 +141,7 @@ export function DashboardClient({ snippets }: DashboardClientProps) {
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem asChild>
                         <Link
-                          href={`/preview/${snippet.id}`}
+                          href={`/preview/${snippet.slug}`}
                           className="flex items-center gap-2 cursor-pointer"
                         >
                           <Eye className="h-4 w-4" />
@@ -150,7 +150,7 @@ export function DashboardClient({ snippets }: DashboardClientProps) {
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
                         <Link
-                          href={`/edit/${snippet.id}`}
+                          href={`/edit/${snippet.slug}`}
                           className="flex items-center gap-2 cursor-pointer"
                         >
                           <Edit2 className="h-4 w-4" />
@@ -158,7 +158,7 @@ export function DashboardClient({ snippets }: DashboardClientProps) {
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem
-                        onClick={() => handleCopyLink(snippet.id)}
+                        onClick={() => handleCopyLink(snippet.slug)}
                         className="flex items-center gap-2 cursor-pointer"
                       >
                         <Copy className="h-4 w-4" />
@@ -201,10 +201,10 @@ export function DashboardClient({ snippets }: DashboardClientProps) {
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
-              disabled={isDeleting === toDelete?.id}
+              disabled={isDeleting === toDelete?.slug}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              {isDeleting === toDelete?.id ? "Deleting..." : "Delete"}
+              {isDeleting === toDelete?.slug ? "Deleting..." : "Delete"}
             </AlertDialogAction>
           </div>
         </AlertDialogContent>

@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { Textarea } from "../ui/textarea";
 
 export function CreateSnippetForm() {
   const router = useRouter();
@@ -19,6 +20,7 @@ export function CreateSnippetForm() {
     css: "",
     js: "",
     expiresIn: 30,
+    expiryUnit: "days" as "hours" | "days",
   });
 
   const handleChange = (field: string, value: string | number) => {
@@ -46,13 +48,14 @@ export function CreateSnippetForm() {
       css: formData.css || undefined,
       js: formData.js || undefined,
       expiresIn: formData.expiresIn > 0 ? formData.expiresIn : undefined,
+      expiryUnit: formData.expiryUnit,
     });
 
     setIsLoading(false);
 
     if (result.success) {
       toast.success("Snippet created successfully!");
-      router.push(`/preview/${result.snippet!.id}`);
+      router.push(`/preview/${result.snippet!.slug}`);
     } else {
       toast.error(result.error || "Failed to create snippet");
     }
@@ -61,7 +64,7 @@ export function CreateSnippetForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="space-y-6 bg-card p-6 rounded-lg border border-border"
+      className="space-y-6 bg-card p-6 rounded border border-border"
     >
       {/* Title */}
       <div className="space-y-2">
@@ -78,53 +81,65 @@ export function CreateSnippetForm() {
       {/* HTML Editor */}
       <div className="space-y-2">
         <Label htmlFor="html">HTML</Label>
-        <textarea
+        <Textarea
           id="html"
           value={formData.html}
           onChange={(e) => handleChange("html", e.target.value)}
           placeholder="<h1>Hello World</h1>"
           required
-          className="w-full h-40 p-3 bg-input border border-border rounded-md font-mono text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring"
         />
       </div>
 
       {/* CSS Editor */}
       <div className="space-y-2">
         <Label htmlFor="css">CSS (Optional)</Label>
-        <textarea
+        <Textarea
           id="css"
           value={formData.css}
           onChange={(e) => handleChange("css", e.target.value)}
           placeholder="h1 { color: blue; font-size: 2rem; }"
-          className="w-full h-40 p-3 bg-input border border-border rounded-md font-mono text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring"
         />
       </div>
 
       {/* JS Editor */}
       <div className="space-y-2">
         <Label htmlFor="js">JavaScript (Optional)</Label>
-        <textarea
+        <Textarea
           id="js"
           value={formData.js}
           onChange={(e) => handleChange("js", e.target.value)}
           placeholder="document.querySelector('h1').addEventListener('click', () => { console.log('Clicked!'); });"
-          className="w-full h-40 p-3 bg-input border border-border rounded-md font-mono text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring"
         />
       </div>
 
       {/* Expiry */}
       <div className="space-y-2">
-        <Label htmlFor="expiresIn">Expires in (days) - 0 = Never</Label>
-        <Input
-          id="expiresIn"
-          type="number"
-          value={formData.expiresIn}
-          onChange={(e) =>
-            handleChange("expiresIn", Number.parseInt(e.target.value, 10) || 0)
-          }
-          placeholder="30"
-          min="0"
-        />
+        <Label htmlFor="expiresIn">Expires in (0 = Never)</Label>
+        <div className="flex gap-2">
+          <Input
+            id="expiresIn"
+            type="number"
+            value={formData.expiresIn}
+            onChange={(e) =>
+              handleChange(
+                "expiresIn",
+                Number.parseInt(e.target.value, 10) || 0,
+              )
+            }
+            placeholder="30"
+            min="0"
+            className="flex-1"
+          />
+          <select
+            value={formData.expiryUnit}
+            onChange={(e) => handleChange("expiryUnit", e.target.value)}
+            className="px-3 py-2 bg-input border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
+            aria-label="Expiry unit"
+          >
+            <option value="hours">Hours</option>
+            <option value="days">Days</option>
+          </select>
+        </div>
       </div>
 
       {/* Submit Button */}

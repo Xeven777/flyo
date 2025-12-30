@@ -2,32 +2,70 @@
 
 import prisma from "@/lib/prisma";
 
+// Utility function to generate slug from title
+function generateSlug(title: string): string {
+  return title
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, "") // Remove special characters
+    .replace(/\s+/g, "-") // Replace spaces with hyphens
+    .replace(/-+/g, "-") // Replace multiple hyphens with single hyphen
+    .replace(/^-+|-+$/g, ""); // Remove leading/trailing hyphens
+}
+
+// Check if slug exists and generate unique one
+async function generateUniqueSlug(baseTitle: string): Promise<string> {
+  let slug = generateSlug(baseTitle);
+  let counter = 1;
+
+  // Check if slug exists
+  while (true) {
+    const existing = await prisma.snippet.findUnique({
+      where: { slug: counter === 1 ? slug : `${slug}-${counter}` },
+    });
+
+    if (!existing) {
+      return counter === 1 ? slug : `${slug}-${counter}`;
+    }
+    counter++;
+  }
+}
+
 export interface CreateSnippetInput {
   title: string;
   html: string;
   css?: string;
   js?: string;
-  expiresIn?: number; // days
+  expiresIn?: number; // hours
+  expiryUnit?: "hours" | "days"; // Unit for expiry
 }
 
 export interface UpdateSnippetInput {
-  id: string;
+  slug: string;
   title?: string;
   html?: string;
   css?: string;
   js?: string;
   expiresIn?: number;
+  expiryUnit?: "hours" | "days";
 }
 
 // Create a new snippet
 export async function createSnippet(input: CreateSnippetInput) {
   try {
-    const expiresAt = input.expiresIn
-      ? new Date(Date.now() + input.expiresIn * 24 * 60 * 60 * 1000)
-      : null;
+    const slug = await generateUniqueSlug(input.title);
+
+    let expiresAt: Date | null = null;
+    if (input.expiresIn && input.expiresIn > 0) {
+      const unit = input.expiryUnit || "days";
+      const multiplier =
+        unit === "hours" ? 60 * 60 * 1000 : 24 * 60 * 60 * 1000;
+      expiresAt = new Date(Date.now() + input.expiresIn * multiplier);
+    }
 
     const snippet = await prisma.snippet.create({
       data: {
+        slug,
         title: input.title,
         html: input.html,
         css: input.css || null,
@@ -43,11 +81,11 @@ export async function createSnippet(input: CreateSnippetInput) {
   }
 }
 
-// Get snippet by ID
-export async function getSnippet(id: string) {
+// Get snippet by slug
+export async function getSnippet(slug: string) {
   try {
     const snippet = await prisma.snippet.findUnique({
-      where: { id },
+      where: { slug },
     });
 
     if (!snippet) {
@@ -66,7 +104,7 @@ export async function getSnippet(id: string) {
 
     // Increment view count and update lastViewedAt
     await prisma.snippet.update({
-      where: { id },
+      where: { slug },
       data: {
         views: snippet.views + 1,
         lastViewedAt: new Date(),
@@ -90,14 +128,17 @@ export async function updateSnippet(input: UpdateSnippetInput) {
     if (input.css !== undefined) updateData.css = input.css;
     if (input.js !== undefined) updateData.js = input.js;
 
-    if (input.expiresIn !== undefined) {
+    if (input.expiresIn !== undefined && input.expiresIn > 0) {
+      const unit = input.expiryUnit || "days";
+      const multiplier =
+        unit === "hours" ? 60 * 60 * 1000 : 24 * 60 * 60 * 1000;
       updateData.expiresAt = new Date(
-        Date.now() + input.expiresIn * 24 * 60 * 60 * 1000
+        Date.now() + input.expiresIn * multiplier,
       );
     }
 
     const snippet = await prisma.snippet.update({
-      where: { id: input.id },
+      where: { slug: input.slug },
       data: updateData,
     });
 
@@ -109,10 +150,10 @@ export async function updateSnippet(input: UpdateSnippetInput) {
 }
 
 // Delete snippet
-export async function deleteSnippet(id: string) {
+export async function deleteSnippet(slug: string) {
   try {
     await prisma.snippet.delete({
-      where: { id },
+      where: { slug },
     });
 
     return { success: true };
@@ -123,10 +164,10 @@ export async function deleteSnippet(id: string) {
 }
 
 // Disable snippet
-export async function disableSnippet(id: string) {
+export async function disableSnippet(slug: string) {
   try {
     const snippet = await prisma.snippet.update({
-      where: { id },
+      where: { slug },
       data: { isDisabled: true },
     });
 
@@ -138,10 +179,10 @@ export async function disableSnippet(id: string) {
 }
 
 // Enable snippet
-export async function enableSnippet(id: string) {
+export async function enableSnippet(slug: string) {
   try {
     const snippet = await prisma.snippet.update({
-      where: { id },
+      where: { slug },
       data: { isDisabled: false },
     });
 

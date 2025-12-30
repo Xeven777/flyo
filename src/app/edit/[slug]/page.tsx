@@ -1,14 +1,15 @@
 import { getSnippet } from "@/actions/snippets";
 import { notFound } from "next/navigation";
 import { EditSnippetForm } from "@/components/edit/edit-snippet-form";
+import { Metadata } from "next";
 
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ id: string }>;
-}) {
-  const { id } = await params;
-  const result = await getSnippet(id);
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const result = await getSnippet(slug);
 
   if (!result.success) {
     return { title: "Snippet Not Found" };
@@ -22,10 +23,10 @@ export async function generateMetadata({
 export default async function EditPage({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: Promise<{ slug: string }>;
 }) {
-  const { id } = await params;
-  const result = await getSnippet(id);
+  const { slug } = await params;
+  const result = await getSnippet(slug);
 
   if (!result.success) {
     notFound();

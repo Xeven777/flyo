@@ -6,9 +6,15 @@ interface HtmlPreviewClientProps {
   html: string;
   css: string;
   js: string;
+  className?: string;
 }
 
-export function HtmlPreviewClient({ html, css, js }: HtmlPreviewClientProps) {
+export function HtmlPreviewClient({
+  html,
+  css,
+  js,
+  className = "",
+}: HtmlPreviewClientProps) {
   const srcdoc = useMemo(() => {
     if (!css && !js) {
       return html;
@@ -38,11 +44,11 @@ export function HtmlPreviewClient({ html, css, js }: HtmlPreviewClientProps) {
   }, [html, css, js]);
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className={`flex flex-col gap-4 ${className}`}>
       <div className="bg-card border border-border rounded-lg overflow-hidden">
         <iframe
           srcDoc={srcdoc}
-          className="w-full bg-white h-svh"
+          className="w-full bg-white h-[600px] lg:h-[calc(100vh-200px)]"
           title="HTML Preview"
           sandbox="allow-scripts"
         />

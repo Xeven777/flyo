@@ -1,11 +1,6 @@
 import { getAllSnippets } from "@/actions/snippets";
 import { DashboardClient } from "@/components/dashboard/dashboard-client";
 
-export const metadata = {
-  title: "Dashboard - HTML Preview",
-  description: "Manage your HTML snippets",
-};
-
 export default async function DashboardPage() {
   const result = await getAllSnippets();
 
