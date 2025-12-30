@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { updateSnippet } from "@/actions/snippets";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import Link from "next/link";
@@ -69,37 +70,34 @@ export function EditSnippetForm({ snippet }: EditSnippetFormProps) {
       {/* HTML Editor */}
       <div className="space-y-2">
         <Label htmlFor="html">HTML</Label>
-        <textarea
+        <Textarea
           id="html"
           value={formData.html}
           onChange={(e) => handleChange("html", e.target.value)}
           placeholder="<h1>Hello World</h1>"
           required
-          className="w-full h-40 p-3 bg-input border border-border rounded-md font-mono text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring"
         />
       </div>
 
       {/* CSS Editor */}
       <div className="space-y-2">
         <Label htmlFor="css">CSS (Optional)</Label>
-        <textarea
+        <Textarea
           id="css"
           value={formData.css}
           onChange={(e) => handleChange("css", e.target.value)}
           placeholder="h1 { color: blue; }"
-          className="w-full h-40 p-3 bg-input border border-border rounded-md font-mono text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring"
         />
       </div>
 
       {/* JS Editor */}
       <div className="space-y-2">
         <Label htmlFor="js">JavaScript (Optional)</Label>
-        <textarea
+        <Textarea
           id="js"
           value={formData.js}
           onChange={(e) => handleChange("js", e.target.value)}
           placeholder="console.log('Hello');"
-          className="w-full h-40 p-3 bg-input border border-border rounded-md font-mono text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring"
         />
       </div>
 

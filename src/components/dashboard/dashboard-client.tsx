@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import type { Snippet } from "@prisma/client";
 import {
   deleteSnippet,
   disableSnippet,
@@ -34,6 +33,7 @@ import {
 import { Eye, Edit2, Copy, Trash2, MoreVertical } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
+import { Snippet } from "../../../generated/prisma";
 
 interface DashboardClientProps {
   snippets: Snippet[];

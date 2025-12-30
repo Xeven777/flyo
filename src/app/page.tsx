@@ -11,7 +11,7 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Code2 className="h-8 w-8 text-primary" />
-            <h1 className="text-2xl font-bold text-foreground">HTML Preview</h1>
+            <h1 className="text-2xl font-bold text-foreground">Flyo</h1>
           </div>
           <Link href="/dashboard">
             <Button variant="outline">Dashboard</Button>
