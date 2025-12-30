@@ -7,7 +7,7 @@ const geist = Geist({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Flyo",
-  description: "Created with v0",
+  description: "Create and share HTML snippets with live previews easily.",
 };
 
 export default function RootLayout({

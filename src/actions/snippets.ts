@@ -1,30 +1,30 @@
-"use server"
+"use server";
 
-import { PrismaClient } from "@prisma/client"
-
-const prisma = new PrismaClient()
+import prisma from "@/lib/prisma";
 
 export interface CreateSnippetInput {
-  title: string
-  html: string
-  css?: string
-  js?: string
-  expiresIn?: number // days
+  title: string;
+  html: string;
+  css?: string;
+  js?: string;
+  expiresIn?: number; // days
 }
 
 export interface UpdateSnippetInput {
-  id: string
-  title?: string
-  html?: string
-  css?: string
-  js?: string
-  expiresIn?: number
+  id: string;
+  title?: string;
+  html?: string;
+  css?: string;
+  js?: string;
+  expiresIn?: number;
 }
 
 // Create a new snippet
 export async function createSnippet(input: CreateSnippetInput) {
   try {
-    const expiresAt = input.expiresIn ? new Date(Date.now() + input.expiresIn * 24 * 60 * 60 * 1000) : null
+    const expiresAt = input.expiresIn
+      ? new Date(Date.now() + input.expiresIn * 24 * 60 * 60 * 1000)
+      : null;
 
     const snippet = await prisma.snippet.create({
       data: {
@@ -34,12 +34,12 @@ export async function createSnippet(input: CreateSnippetInput) {
         js: input.js || null,
         expiresAt,
       },
-    })
+    });
 
-    return { success: true, snippet }
+    return { success: true, snippet };
   } catch (error) {
-    console.error("[v0] createSnippet error:", error)
-    return { success: false, error: "Failed to create snippet" }
+    console.error("[v0] createSnippet error:", error);
+    return { success: false, error: "Failed to create snippet" };
   }
 }
 
@@ -48,20 +48,20 @@ export async function getSnippet(id: string) {
   try {
     const snippet = await prisma.snippet.findUnique({
       where: { id },
-    })
+    });
 
     if (!snippet) {
-      return { success: false, error: "Snippet not found" }
+      return { success: false, error: "Snippet not found" };
     }
 
     // Check expiry
     if (snippet.expiresAt && new Date() > snippet.expiresAt) {
-      return { success: false, error: "Snippet has expired" }
+      return { success: false, error: "Snippet has expired" };
     }
 
     // Check if disabled
     if (snippet.isDisabled) {
-      return { success: false, error: "Snippet is disabled" }
+      return { success: false, error: "Snippet is disabled" };
     }
 
     // Increment view count and update lastViewedAt
@@ -71,38 +71,40 @@ export async function getSnippet(id: string) {
         views: snippet.views + 1,
         lastViewedAt: new Date(),
       },
-    })
-
-    return { success: true, snippet }
+    });
+    // console.log(snippet);
+    return { success: true, snippet };
   } catch (error) {
-    console.error("[v0] getSnippet error:", error)
-    return { success: false, error: "Failed to fetch snippet" }
+    console.error("[v0] getSnippet error:", error);
+    return { success: false, error: "Failed to fetch snippet" };
   }
 }
 
 // Update snippet
 export async function updateSnippet(input: UpdateSnippetInput) {
   try {
-    const updateData: any = {}
+    const updateData: any = {};
 
-    if (input.title !== undefined) updateData.title = input.title
-    if (input.html !== undefined) updateData.html = input.html
-    if (input.css !== undefined) updateData.css = input.css
-    if (input.js !== undefined) updateData.js = input.js
+    if (input.title !== undefined) updateData.title = input.title;
+    if (input.html !== undefined) updateData.html = input.html;
+    if (input.css !== undefined) updateData.css = input.css;
+    if (input.js !== undefined) updateData.js = input.js;
 
     if (input.expiresIn !== undefined) {
-      updateData.expiresAt = new Date(Date.now() + input.expiresIn * 24 * 60 * 60 * 1000)
+      updateData.expiresAt = new Date(
+        Date.now() + input.expiresIn * 24 * 60 * 60 * 1000
+      );
     }
 
     const snippet = await prisma.snippet.update({
       where: { id: input.id },
       data: updateData,
-    })
+    });
 
-    return { success: true, snippet }
+    return { success: true, snippet };
   } catch (error) {
-    console.error("[v0] updateSnippet error:", error)
-    return { success: false, error: "Failed to update snippet" }
+    console.error("[v0] updateSnippet error:", error);
+    return { success: false, error: "Failed to update snippet" };
   }
 }
 
@@ -111,12 +113,12 @@ export async function deleteSnippet(id: string) {
   try {
     await prisma.snippet.delete({
       where: { id },
-    })
+    });
 
-    return { success: true }
+    return { success: true };
   } catch (error) {
-    console.error("[v0] deleteSnippet error:", error)
-    return { success: false, error: "Failed to delete snippet" }
+    console.error("[v0] deleteSnippet error:", error);
+    return { success: false, error: "Failed to delete snippet" };
   }
 }
 
@@ -126,12 +128,12 @@ export async function disableSnippet(id: string) {
     const snippet = await prisma.snippet.update({
       where: { id },
       data: { isDisabled: true },
-    })
+    });
 
-    return { success: true, snippet }
+    return { success: true, snippet };
   } catch (error) {
-    console.error("[v0] disableSnippet error:", error)
-    return { success: false, error: "Failed to disable snippet" }
+    console.error("[v0] disableSnippet error:", error);
+    return { success: false, error: "Failed to disable snippet" };
   }
 }
 
@@ -141,12 +143,12 @@ export async function enableSnippet(id: string) {
     const snippet = await prisma.snippet.update({
       where: { id },
       data: { isDisabled: false },
-    })
+    });
 
-    return { success: true, snippet }
+    return { success: true, snippet };
   } catch (error) {
-    console.error("[v0] enableSnippet error:", error)
-    return { success: false, error: "Failed to enable snippet" }
+    console.error("[v0] enableSnippet error:", error);
+    return { success: false, error: "Failed to enable snippet" };
   }
 }
 
@@ -155,11 +157,11 @@ export async function getAllSnippets() {
   try {
     const snippets = await prisma.snippet.findMany({
       orderBy: { createdAt: "desc" },
-    })
+    });
 
-    return { success: true, snippets }
+    return { success: true, snippets };
   } catch (error) {
-    console.error("[v0] getAllSnippets error:", error)
-    return { success: false, error: "Failed to fetch snippets" }
+    console.error("[v0] getAllSnippets error:", error);
+    return { success: false, error: "Failed to fetch snippets" };
   }
 }

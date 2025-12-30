@@ -1,12 +1,7 @@
-import { CreateSnippetForm } from "@/components/home/create-snippet-form"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Code2 } from "lucide-react"
-
-export const metadata = {
-  title: "HTML Preview App",
-  description: "Create and share HTML snippets with live previews",
-}
+import { CreateSnippetForm } from "@/components/home/create-snippet-form";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Code2 } from "lucide-react";
 
 export default function HomePage() {
   return (
@@ -27,15 +22,17 @@ export default function HomePage() {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
         <div className="max-w-2xl">
-          <h2 className="text-3xl font-bold text-foreground mb-4">Create a New Snippet</h2>
+          <h2 className="text-3xl font-bold text-foreground mb-4">
+            Create a New Snippet
+          </h2>
           <p className="text-muted-foreground mb-8">
-            Create shareable HTML snippets with CSS and JavaScript. Get instant live previews and manage all your
-            snippets in one place.
+            Create shareable HTML snippets with CSS and JavaScript. Get instant
+            live previews and manage all your snippets in one place.
           </p>
 
           <CreateSnippetForm />
         </div>
       </div>
     </div>
-  )
+  );
 }

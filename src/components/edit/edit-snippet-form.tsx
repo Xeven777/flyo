@@ -4,13 +4,13 @@ import type React from "react";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import type { Snippet } from "@prisma/client";
 import { updateSnippet } from "@/actions/snippets";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import Link from "next/link";
+import { Snippet } from "../../../generated/prisma";
 
 interface EditSnippetFormProps {
   snippet: Snippet;

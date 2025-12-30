@@ -1,44 +1,44 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { createSnippet } from "@/actions/snippets"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { toast } from "sonner"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { createSnippet } from "@/actions/snippets";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
 
 export function CreateSnippetForm() {
-  const router = useRouter()
-  const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
     html: "<h1>Hello World</h1>",
     css: "",
     js: "",
     expiresIn: 30,
-  })
+  });
 
   const handleChange = (field: string, value: string | number) => {
-    setFormData((prev) => ({ ...prev, [field]: value }))
-  }
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
     if (!formData.title.trim()) {
-      toast.error("Please enter a title")
-      return
+      toast.error("Please enter a title");
+      return;
     }
 
     if (!formData.html.trim()) {
-      toast.error("Please enter HTML content")
-      return
+      toast.error("Please enter HTML content");
+      return;
     }
 
-    setIsLoading(true)
+    setIsLoading(true);
 
     const result = await createSnippet({
       title: formData.title,
@@ -46,20 +46,23 @@ export function CreateSnippetForm() {
       css: formData.css || undefined,
       js: formData.js || undefined,
       expiresIn: formData.expiresIn > 0 ? formData.expiresIn : undefined,
-    })
+    });
 
-    setIsLoading(false)
+    setIsLoading(false);
 
     if (result.success) {
-      toast.success("Snippet created successfully!")
-      router.push(`/preview/${result.snippet!.id}`)
+      toast.success("Snippet created successfully!");
+      router.push(`/preview/${result.snippet!.id}`);
     } else {
-      toast.error(result.error || "Failed to create snippet")
+      toast.error(result.error || "Failed to create snippet");
     }
-  }
+  };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 bg-card p-6 rounded-lg border border-border">
+    <form
+      onSubmit={handleSubmit}
+      className="space-y-6 bg-card p-6 rounded-lg border border-border"
+    >
       {/* Title */}
       <div className="space-y-2">
         <Label htmlFor="title">Title</Label>
@@ -116,7 +119,9 @@ export function CreateSnippetForm() {
           id="expiresIn"
           type="number"
           value={formData.expiresIn}
-          onChange={(e) => handleChange("expiresIn", Number.parseInt(e.target.value, 10) || 0)}
+          onChange={(e) =>
+            handleChange("expiresIn", Number.parseInt(e.target.value, 10) || 0)
+          }
           placeholder="30"
           min="0"
         />
@@ -127,5 +132,5 @@ export function CreateSnippetForm() {
         {isLoading ? "Creating..." : "Create Snippet"}
       </Button>
     </form>
-  )
+  );
 }
