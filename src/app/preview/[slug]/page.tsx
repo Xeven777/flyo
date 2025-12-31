@@ -1,6 +1,5 @@
 import { getSnippet } from "@/actions/snippets";
 import { notFound } from "next/navigation";
-import { HtmlPreviewClient } from "@/components/preview/html-preview-client";
 import { Metadata } from "next";
 
 export async function generateMetadata({
@@ -16,8 +15,8 @@ export async function generateMetadata({
   }
 
   return {
-    title: result.snippet!.title + " - HTML Preview",
-    description: `Preview of ${result.snippet!.title}`,
+    title: result.snippet!.title,
+    description: `Demo Preview of ${result.snippet!.title}`,
   };
 }
 
