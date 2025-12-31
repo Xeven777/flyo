@@ -133,7 +133,7 @@ export function CreateSnippetForm() {
               onChange={(e) =>
                 handleChange(
                   "expiresIn",
-                  Number.parseInt(e.target.value, 10) || 0
+                  Number.parseInt(e.target.value, 10) || 0,
                 )
               }
               placeholder="30"

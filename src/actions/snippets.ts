@@ -134,7 +134,7 @@ export async function updateSnippet(input: UpdateSnippetInput) {
       const multiplier =
         unit === "hours" ? 60 * 60 * 1000 : 24 * 60 * 60 * 1000;
       updateData.expiresAt = new Date(
-        Date.now() + input.expiresIn * multiplier
+        Date.now() + input.expiresIn * multiplier,
       );
     }
 
