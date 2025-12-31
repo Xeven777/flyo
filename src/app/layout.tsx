@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Familjen_Grotesk } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
+import Clarity from "@/components/Clarity";
 
 const font = Familjen_Grotesk({ subsets: ["latin"] });
 
@@ -18,6 +19,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
+      {process.env.NODE_ENV === "production" ? <Clarity /> : null}
       <body className={`${font.className} antialiased`}>
         {children}
         <Toaster richColors theme="dark" />
