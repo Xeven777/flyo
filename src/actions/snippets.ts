@@ -111,7 +111,7 @@ export async function getSnippet(slug: string) {
         lastViewedAt: new Date(),
       },
     });
-    // console.log(snippet);
+    revalidatePath("/dashboard");
     return { success: true, snippet };
   } catch (error) {
     console.error("getSnippet error:", error);
@@ -156,7 +156,7 @@ export async function deleteSnippet(slug: string) {
     await prisma.snippet.delete({
       where: { slug },
     });
-    revalidatePath("/dashboard");
+    refresh();
     return { success: true };
   } catch (error) {
     console.error("deleteSnippet error:", error);
