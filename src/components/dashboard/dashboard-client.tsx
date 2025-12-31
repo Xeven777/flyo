@@ -68,7 +68,7 @@ export function DashboardClient({ snippets }: DashboardClientProps) {
 
     if (result.success) {
       toast.success(
-        snippet.isDisabled ? "Snippet enabled" : "Snippet disabled",
+        snippet.isDisabled ? "Snippet enabled" : "Snippet disabled"
       );
       router.refresh();
     } else {
@@ -112,7 +112,11 @@ export function DashboardClient({ snippets }: DashboardClientProps) {
           <TableBody>
             {snippets.map((snippet) => (
               <TableRow key={snippet.slug}>
-                <TableCell className="font-medium">{snippet.title}</TableCell>
+                <TableCell className="font-medium">
+                  <Link href={`/preview/${snippet.slug}`} target="_blank">
+                    {snippet.title}
+                  </Link>
+                </TableCell>
                 <TableCell>{snippet.views}</TableCell>
                 <TableCell>
                   <span
@@ -142,6 +146,7 @@ export function DashboardClient({ snippets }: DashboardClientProps) {
                       <DropdownMenuItem asChild>
                         <Link
                           href={`/preview/${snippet.slug}`}
+                          target="_blank"
                           className="flex items-center gap-2 cursor-pointer"
                         >
                           <Eye className="h-4 w-4" />

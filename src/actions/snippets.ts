@@ -111,7 +111,6 @@ export async function getSnippet(slug: string) {
         lastViewedAt: new Date(),
       },
     });
-    revalidatePath("/dashboard");
     return { success: true, snippet };
   } catch (error) {
     console.error("getSnippet error:", error);
