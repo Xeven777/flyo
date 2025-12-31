@@ -1,6 +1,7 @@
 "use server";
 
 import prisma from "@/lib/prisma";
+import { refresh, revalidatePath } from "next/cache";
 
 // Utility function to generate slug from title
 function generateSlug(title: string): string {
@@ -73,10 +74,10 @@ export async function createSnippet(input: CreateSnippetInput) {
         expiresAt,
       },
     });
-
+    revalidatePath("/dashboard");
     return { success: true, snippet };
   } catch (error) {
-    console.error("[v0] createSnippet error:", error);
+    console.error("createSnippet error:", error);
     return { success: false, error: "Failed to create snippet" };
   }
 }
@@ -113,7 +114,7 @@ export async function getSnippet(slug: string) {
     // console.log(snippet);
     return { success: true, snippet };
   } catch (error) {
-    console.error("[v0] getSnippet error:", error);
+    console.error("getSnippet error:", error);
     return { success: false, error: "Failed to fetch snippet" };
   }
 }
@@ -133,7 +134,7 @@ export async function updateSnippet(input: UpdateSnippetInput) {
       const multiplier =
         unit === "hours" ? 60 * 60 * 1000 : 24 * 60 * 60 * 1000;
       updateData.expiresAt = new Date(
-        Date.now() + input.expiresIn * multiplier,
+        Date.now() + input.expiresIn * multiplier
       );
     }
 
@@ -141,10 +142,10 @@ export async function updateSnippet(input: UpdateSnippetInput) {
       where: { slug: input.slug },
       data: updateData,
     });
-
+    refresh();
     return { success: true, snippet };
   } catch (error) {
-    console.error("[v0] updateSnippet error:", error);
+    console.error("updateSnippet error:", error);
     return { success: false, error: "Failed to update snippet" };
   }
 }
@@ -155,10 +156,10 @@ export async function deleteSnippet(slug: string) {
     await prisma.snippet.delete({
       where: { slug },
     });
-
+    revalidatePath("/dashboard");
     return { success: true };
   } catch (error) {
-    console.error("[v0] deleteSnippet error:", error);
+    console.error("deleteSnippet error:", error);
     return { success: false, error: "Failed to delete snippet" };
   }
 }
@@ -170,10 +171,10 @@ export async function disableSnippet(slug: string) {
       where: { slug },
       data: { isDisabled: true },
     });
-
+    refresh();
     return { success: true, snippet };
   } catch (error) {
-    console.error("[v0] disableSnippet error:", error);
+    console.error("disableSnippet error:", error);
     return { success: false, error: "Failed to disable snippet" };
   }
 }
@@ -185,10 +186,10 @@ export async function enableSnippet(slug: string) {
       where: { slug },
       data: { isDisabled: false },
     });
-
+    refresh();
     return { success: true, snippet };
   } catch (error) {
-    console.error("[v0] enableSnippet error:", error);
+    console.error("enableSnippet error:", error);
     return { success: false, error: "Failed to enable snippet" };
   }
 }
@@ -202,7 +203,7 @@ export async function getAllSnippets() {
 
     return { success: true, snippets };
   } catch (error) {
-    console.error("[v0] getAllSnippets error:", error);
+    console.error("getAllSnippets error:", error);
     return { success: false, error: "Failed to fetch snippets" };
   }
 }
