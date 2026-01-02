@@ -9,6 +9,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { toast } from "sonner";
 import { Snippet } from "../../../generated/prisma";
 import { HtmlPreviewClient } from "@/components/preview/html-preview-client";
@@ -25,6 +32,8 @@ export function EditSnippetForm({ snippet }: EditSnippetFormProps) {
     html: snippet.html,
     css: snippet.css || "",
     js: snippet.js || "",
+    expiresIn: "",
+    expiryUnit: "days" as "hours" | "days",
   });
 
   const handleChange = (field: string, value: string) => {
@@ -35,12 +44,18 @@ export function EditSnippetForm({ snippet }: EditSnippetFormProps) {
     e.preventDefault();
     setIsLoading(true);
 
+    const expiresIn = formData.expiresIn
+      ? parseInt(formData.expiresIn)
+      : undefined;
+
     const result = await updateSnippet({
       slug: snippet.slug,
       title: formData.title,
       html: formData.html,
       css: formData.css || undefined,
       js: formData.js || undefined,
+      expiresIn: expiresIn,
+      expiryUnit: formData.expiryUnit,
     });
 
     setIsLoading(false);
@@ -101,6 +116,38 @@ export function EditSnippetForm({ snippet }: EditSnippetFormProps) {
             onChange={(e) => handleChange("js", e.target.value)}
             placeholder="console.log('Hello');"
           />
+        </div>
+
+        {/* Expiry Settings */}
+        <div className="space-y-2 border-t pt-4">
+          <Label>Snippet Expiry (Optional)</Label>
+          <div className="flex gap-2">
+            <Input
+              type="number"
+              value={formData.expiresIn}
+              onChange={(e) => handleChange("expiresIn", e.target.value)}
+              placeholder="e.g., 24"
+              min="0"
+              className="flex-1"
+            />
+            <Select
+              value={formData.expiryUnit}
+              onValueChange={(value) =>
+                handleChange("expiryUnit", value as "hours" | "days")
+              }
+            >
+              <SelectTrigger className="w-24">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="hours">Hours</SelectItem>
+                <SelectItem value="days">Days</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Leave empty to remove expiry date
+          </p>
         </div>
 
         {/* Buttons */}

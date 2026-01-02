@@ -82,7 +82,7 @@ export async function createSnippet(input: CreateSnippetInput) {
   }
 }
 
-// Get snippet by slug
+// Get snippet by slug (for editing - no expiry check)
 export async function getSnippet(slug: string) {
   try {
     const snippet = await prisma.snippet.findUnique({
@@ -93,7 +93,25 @@ export async function getSnippet(slug: string) {
       return { success: false, error: "Snippet not found" };
     }
 
-    // Check expiry
+    return { success: true, snippet };
+  } catch (error) {
+    console.error("getSnippet error:", error);
+    return { success: false, error: "Failed to fetch snippet" };
+  }
+}
+
+// Get snippet for preview (checks expiry and disabled status)
+export async function getSnippetForPreview(slug: string) {
+  try {
+    const snippet = await prisma.snippet.findUnique({
+      where: { slug },
+    });
+
+    if (!snippet) {
+      return { success: false, error: "Snippet not found" };
+    }
+
+    // Check expiry - only for previews
     if (snippet.expiresAt && new Date() > snippet.expiresAt) {
       return { success: false, error: "Snippet has expired" };
     }
@@ -113,7 +131,7 @@ export async function getSnippet(slug: string) {
     });
     return { success: true, snippet };
   } catch (error) {
-    console.error("getSnippet error:", error);
+    console.error("getSnippetForPreview error:", error);
     return { success: false, error: "Failed to fetch snippet" };
   }
 }
@@ -133,7 +151,7 @@ export async function updateSnippet(input: UpdateSnippetInput) {
       const multiplier =
         unit === "hours" ? 60 * 60 * 1000 : 24 * 60 * 60 * 1000;
       updateData.expiresAt = new Date(
-        Date.now() + input.expiresIn * multiplier,
+        Date.now() + input.expiresIn * multiplier
       );
     }
 

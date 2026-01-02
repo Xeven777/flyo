@@ -1,4 +1,4 @@
-import { getSnippet } from "@/actions/snippets";
+import { getSnippetForPreview } from "@/actions/snippets";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 
@@ -8,7 +8,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const result = await getSnippet(slug);
+  const result = await getSnippetForPreview(slug);
 
   if (!result.success) {
     return { title: "Snippet Not Found" };
@@ -26,7 +26,7 @@ export default async function PreviewPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const result = await getSnippet(slug);
+  const result = await getSnippetForPreview(slug);
 
   if (!result.success) {
     notFound();
