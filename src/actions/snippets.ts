@@ -49,6 +49,7 @@ export interface UpdateSnippetInput {
   js?: string;
   expiresIn?: number;
   expiryUnit?: "hours" | "days";
+  newSlug?: string;
 }
 
 // Create a new snippet
@@ -155,10 +156,34 @@ export async function updateSnippet(input: UpdateSnippetInput) {
       );
     }
 
+    // Handle slug change if requested
+    if (input.newSlug) {
+      const sanitized = generateSlug(input.newSlug);
+      if (!sanitized) {
+        return { success: false, error: "Invalid slug" };
+      }
+
+      // If slug is changing, ensure it's unique
+      if (sanitized !== input.slug) {
+        const existing = await prisma.snippet.findUnique({
+          where: { slug: sanitized },
+        });
+
+        if (existing) {
+          return { success: false, error: "Slug already exists" };
+        }
+
+        updateData.slug = sanitized;
+      }
+    }
+
     const snippet = await prisma.snippet.update({
       where: { slug: input.slug },
       data: updateData,
     });
+    revalidatePath("/dashboard");
+    revalidatePath(`/preview/${snippet.slug}`);
+    revalidatePath(`/edit/${snippet.slug}`);
     refresh();
     return { success: true, snippet };
   } catch (error) {

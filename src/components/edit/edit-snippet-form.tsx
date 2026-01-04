@@ -29,6 +29,7 @@ export function EditSnippetForm({ snippet }: EditSnippetFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     title: snippet.title,
+    slug: snippet.slug,
     html: snippet.html,
     css: snippet.css || "",
     js: snippet.js || "",
@@ -48,12 +49,24 @@ export function EditSnippetForm({ snippet }: EditSnippetFormProps) {
       ? parseInt(formData.expiresIn)
       : undefined;
 
+    const sanitizeSlug = (value: string) =>
+      value
+        .toLowerCase()
+        .trim()
+        .replace(/[^\w\s-]/g, "")
+        .replace(/\s+/g, "-")
+        .replace(/-+/g, "-")
+        .replace(/^-+|-+$/g, "");
+
+    const newSlug = formData.slug ? sanitizeSlug(formData.slug) : undefined;
+
     const result = await updateSnippet({
       slug: snippet.slug,
       title: formData.title,
       html: formData.html,
       css: formData.css || undefined,
       js: formData.js || undefined,
+      newSlug: newSlug && newSlug !== snippet.slug ? newSlug : undefined,
       expiresIn: expiresIn,
       expiryUnit: formData.expiryUnit,
     });
@@ -62,7 +75,7 @@ export function EditSnippetForm({ snippet }: EditSnippetFormProps) {
 
     if (result.success) {
       toast.success("Snippet updated successfully");
-      router.push(`/preview/${snippet.slug}`);
+      router.push(`/preview/${result?.snippet?.slug}`);
     } else {
       toast.error(result.error || "Failed to update snippet");
     }
@@ -82,6 +95,22 @@ export function EditSnippetForm({ snippet }: EditSnippetFormProps) {
             placeholder="Snippet title"
             required
           />
+        </div>
+
+        {/* Slug */}
+        <div className="space-y-2">
+          <Label htmlFor="slug">Slug</Label>
+          <Input
+            id="slug"
+            value={formData.slug}
+            onChange={(e) => handleChange("slug", e.target.value)}
+            placeholder="custom-slug (letters, numbers, hyphens)"
+            className="lowercase"
+            required
+          />
+          <p className="text-xs text-destructive/80">
+            Changing the slug will change the URL for this snippet.
+          </p>
         </div>
 
         {/* HTML Editor */}
